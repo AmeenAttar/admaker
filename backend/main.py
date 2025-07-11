@@ -4,6 +4,7 @@ from routes import script
 from fastapi.middleware.cors import CORSMiddleware
 from routes import voice
 from routes import image
+from routes import video
 
 app = FastAPI()
 
@@ -23,3 +24,4 @@ def health():
 
 app.include_router(voice.router)
 app.include_router(image.router)
+app.include_router(video.router)

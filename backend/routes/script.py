@@ -22,7 +22,10 @@ async def generate_script(
     prompt: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     video: Optional[UploadFile] = File(None),
-    session_id: Optional[str] = Form(None)
+    session_id: Optional[str] = Form(None),
+    script_format: Optional[str] = Form(None),
+    creative_strategy: Optional[str] = Form(None),
+    execution_style: Optional[str] = Form(None)
 ):
     if not prompt and not image and not video and not session_id:
         raise HTTPException(status_code=400, detail="At least one input (prompt, image, video, or session_id) is required.")
@@ -113,6 +116,12 @@ async def generate_script(
         gpt_prompt += f" The product image shows: {image_caption}."
     if video_caption:
         gpt_prompt += f" The video shows: {video_caption}."
+    if script_format:
+        gpt_prompt += f" Script format: {script_format}."
+    if creative_strategy:
+        gpt_prompt += f" Creative strategy/tone: {creative_strategy}."
+    if execution_style:
+        gpt_prompt += f" Creative execution style: {execution_style}."
 
     try:
         response = openai.chat.completions.create(
