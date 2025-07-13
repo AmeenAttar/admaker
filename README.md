@@ -1,116 +1,139 @@
-🔧 Overview: AI AdMaker Web App
+# AI Video Ad Generator
 
-🚀 **NEW: AI-Powered Image Generation**
-* ChatGPT 4.0 optimizes your image descriptions into professional prompts
-* GPT-Image-1 generates high-quality images with customizable styles and tones
-* Support for multiple aspect ratios (square, landscape, portrait)
-* **Two-step process: Generate prompt → Edit → Generate image**
-* **The existing "Generate Ad Image" button now uses AI optimization!**
-* **Upgraded to GPT-Image-1 (replaces DALL-E 3) for next-gen image generation**
+Create compelling video ads in minutes—powered by AI. This app automates the entire ad creation workflow: from scriptwriting, to voiceover, to image and video generation, using state-of-the-art AI services.
 
-🎬 **NEW: Talking Avatar Video Generation**
-* HeyGen API integration for professional talking avatar videos
-* Lip-sync technology with realistic avatars
-* Multiple avatar options and voice integration
-* Complete ad workflow: Script → Voice → Video
+## 🚀 Workflow Overview
 
-✅ Goals Recap:
-* Users upload product name, images, text, optional voice.
-* Choose ad type: static image, poster, video with face/voice.
-* Choose tone, style, aspect ratio (e.g., 16:9, 9:16).
-* App guides user step-by-step:
-    1. Generate script (copywriting)
-    2. Generate voice (voiceover)
-    3. Create visual (image/video) - **Now with AI prompt optimization in 3 steps!**
-    4. Combine into polished final ad
-* Future: pre-made faces, voices, styles/templates.
-* Platform: Web-based, mobile-friendly, cross-platform output (Instagram, TikTok, YouTube, etc.)
+1. **Script Generation:** Describe your product, and GPT-4 crafts a persuasive ad script.
+2. **Image Creation:** The script is used to generate a high-quality product image with DALL-E.
+3. **Voice Synthesis:** ElevenLabs brings your script to life with realistic voiceovers.
+4. **Video Production:** HeyGen combines your visuals and audio into a professional video ad.
+5. **End-to-End Pipeline:** One click, and your ad is ready to share.
 
-🧠 Core Tech Stack
-1. Ad Script Generation (Copywriting)
-Tool	Description	Notes
-OpenAI GPT-4 API	Generate headline, hook, CTA, body copy	Most fluent, can generate style/tone variations
-Anthropic Claude 3	Great for brand-safe, long-form generation	Optional, similar to GPT
-Prompt Engineering	Offer tone options like "Luxury," "Funny," "Edgy"	Use dropdown + pre-filled prompt templates
-Optional: LangChain	If you want multi-step workflows with memory	Good for chaining script ➝ voice ➝ video
-✅ Build dynamic prompts from user input + selected tone, ad type, etc.
+---
 
-2. Text-to-Speech (Voiceover)
-Tool	Description	Notes
-ElevenLabs API	Most realistic voices, clone or choose existing	Real-time, emotion control, top choice
-PlayHT	Web-friendly, realistic, supports many styles	Good alt
-Coqui TTS (Open Source)	Free, customizable, self-host	Less realistic, but flexible
-Amazon Polly	Cheap & scalable but robotic	Good for fallback or basic use cases
-✅ Let user pick a voice from 5–10 presets. Generate MP3 from script.
-
-3. Image / Poster Ad Generation
-Tool	Description	Notes
-GPT-Image-1 (OpenAI)	Generate product/scene/poster layouts	Use via OpenAI API, next-gen multimodal model
-Stable Diffusion (SDXL)	Fully customizable, can run locally	Ideal for branded visuals
-Midjourney (via Discord)	Great for stylized, artistic images	Not API-friendly yet
-Canva API (or plugin)	Use for layout / templates	Add text layers & designs on top of AI art
-✅ Use uploaded product image + prompt + branding tone for poster creation.
-
-4. Video Generation (with Voice, Face, Product)
-Option A: API-based video generation (No-Code Backbones)
-Tool	Description	Notes
-HeyGen API	Talking avatar + face + voice = ad	Ideal for talking-head style ads
-Synthesia API	More corporate, expensive, still great	Use for serious/luxury tones
-RunwayML GEN-3	AI-generated cinematic clips	Add voice later via editor
-Pika Labs	Motion graphics + animated AI content	Closed beta, but useful when open
-✅ Upload voice, choose template/avatar, auto-generate ad.
-Option B: DIY Pipeline (More Control)
-* Use Stable Diffusion or product images to make frames.
-* Add voice via FFmpeg + Wav2Lip (for lip-sync).
-* Animate still images via Kaiber, RunwayML, or DeepMotion.
-* Combine visuals & audio with MoviePy or FFmpeg.
-
-5. Video Assembly & Editing (Final Output)
-Tool	Description
-MoviePy (Python)	Build timelines, add text/audio
-FFmpeg (CLI)	Precise trimming, resolution/aspect ratio conversion
-CapCut API (future)	Mobile-first editing (not public yet)
-Remotion (React)	React-based video rendering (dev-friendly!)
-✅ Build the ad as final MP4: image/video + voice + text overlay.
-
-6. Frontend & Backend
-Frontend
-Tool	Purpose
-Next.js (React)	Core web app
-Tailwind CSS	Clean, fast UI building
-shadcn/ui	Great components for toggles, dropdowns
-Framer Motion	Smooth animations for UX
-Backend
-Tool	Purpose
-FastAPI (Python)	Talk to AI models (text, voice,
+## 🛠️ Getting Started
 
 
-🎬 Ad Script Formats (by medium & duration)
+### 1. Clone the repository
 
-15‑second spot – Very short burst: brand/product intro, quick hook, ending with CTA. Ideal for social or TV where brevity matters. 
-Wikipedia
-+2
-Fall Off The Wall
-+2
-viewfinder.vn
-+2
-30‑second spot – Standard commercial length. Enables a basic narrative (problem → solution → CTA), most commonly purchased time slot.
-60‑second (or longer) – Infomercial or longer-form storytelling. Useful when you need explanation or emotion-building. 
+```bash
+git clone https://github.com/yourusername/ai-video-ad-generator.git
+cd ai-video-ad-generator
+```
 
-🧠 Creative Strategy / Tone Presets
+### 2. Backend Setup
 
-From advertising strategy frameworks (IAB, marketing standard typologies), here are creative “angles” or tones that shape how a script is written:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-Informational / Generic – Straightforward description or category messaging; best for new products/categories.
-Unique Selling Proposition (USP) – Focuses on one standout feature/benefit that matters to consumers.
-Comparative – Direct comparison vs. competitor(s)—used cautiously to avoid legal or backlash.
-Transformational – Emotional appeal that portrays how the product changes a consumer’s life.
-Brand‑image / Lifestyle – Associates product with a desired lifestyle, identity, or status.
-Use‑occasion – Frames product around a specific use‑case or moment (e.g., “for your morning commute”).
-🚀 Common Creative Execution Styles (Delivery Style / Tone)
+Create a `.env` file in `backend/` with your API keys:
+```
+OPENAI_API_KEY=your_key
+ELEVENLABS_API_KEY=your_key
+HEYGEN_API_KEY=your_key
+```
 
-Flashy / Energetic Promo – Fast pacing, upbeat tone, dynamic visuals or punchy audio. Great for impulse buys or social ads.
-Story‑driven / Narrative – Build an emotional journey: character, conflict, resolution using the product.
-Host‑read / Endorsement style – Especially radio or podcast ads: a familiar voice or influencer gives a personal recommendation.
-Demo or Tutorial – Product in action with walkthrough or explanation (common for tech or complex products).
-Jingle / Musical hook – Uses music, slogan or rhyme to boost recall (think jingles or catchy slogans).
+Start the backend:
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+### 3. Frontend Setup
+
+```bash
+cd ../frontend
+npm install
+```
+
+Create a `.env.local` file in `frontend/`:
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+Start the frontend:
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🧑‍💻 Technical Overview
+
+### Architecture
+
+- **Backend:**  
+  - Built with FastAPI (Python), the backend is organized into modular routers for each domain: script, image, voice, and video.
+  - CORS is enabled for local development.
+  - All AI service integrations are encapsulated in dedicated service classes, ensuring separation of concerns and easy extensibility.
+
+- **Frontend:**  
+  - Next.js 14 (TypeScript, Tailwind CSS).
+  - Orchestrates the workflow by calling backend REST endpoints in sequence, handling user input, and presenting results in real time.
+
+### AI & Model Integration
+
+- **Script Generation:**  
+  - Uses OpenAI’s GPT-3.5/4 via the `openai` Python SDK.
+  - The backend dynamically constructs prompts based on user input, uploaded assets, and session context (e.g., product info, image captions).
+  - The system can extract image and video captions using auxiliary models, then injects these into the LLM prompt for richer, context-aware scripts.
+
+- **Image Generation:**  
+  - DALL-E 3 (via OpenAI API) is used for product image creation.
+  - Before calling DALL-E, the backend uses GPT-3.5/4 to optimize the user’s description into a highly detailed, visually specific prompt, leveraging a custom system prompt for advertising/marketing quality.
+  - The backend fetches the generated image, encodes it as base64, and returns it to the frontend.
+
+- **Voice Synthesis:**  
+  - ElevenLabs API is used for text-to-speech.
+  - The backend first refines the ad script using GPT-3.5/4 to remove non-dialogue elements, ensuring the voiceover is natural and concise.
+  - The resulting text is sent to ElevenLabs, and the audio is returned as base64-encoded MP3.
+
+- **Video Generation:**  
+  - HeyGen API is used to generate talking avatar videos.
+  - The backend constructs a payload with the script, avatar, and voice IDs, and polls the HeyGen API for video completion.
+  - The video is downloaded and made available to the frontend.
+
+### Workflow Orchestration
+
+- The frontend triggers each step (script → image → voice → video) via REST calls.
+- The backend manages session state, file uploads, and intermediate results in a secure, isolated manner.
+- All AI calls are performed server-side, keeping API keys and sensitive logic out of the client.
+- The system is designed for extensibility: new AI providers or workflow steps can be added by implementing new service classes and routers.
+
+### Notable Implementation Details
+
+- **Prompt Engineering:**  
+  - Custom system prompts are used for each LLM task (scriptwriting, image prompt optimization, voiceover refinement), maximizing output quality and relevance.
+  - The backend can combine user input, uploaded media, and extracted metadata to create context-rich prompts.
+
+- **Error Handling & Reliability:**  
+  - Each AI integration includes robust error handling, with clear feedback to the frontend.
+  - Long-running tasks (e.g., video generation) are polled asynchronously, and results are cached for session continuity.
+
+- **Security:**  
+  - All API keys are managed via environment variables and never exposed to the client.
+  - Uploaded files and generated assets are stored in isolated directories, with session-based naming to prevent collisions.
+
+---
+
+## 📚 API Reference
+
+- `POST /script` — Generate ad script
+- `POST /image` — Generate product image
+- `POST /voice` — Create voiceover
+- `POST /video/generate` — Create talking avatar
+- `POST /complete-workflow` — End-to-end pipeline
+
+Full interactive docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.

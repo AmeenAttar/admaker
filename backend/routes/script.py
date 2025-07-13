@@ -189,3 +189,149 @@ async def upload_product(
         "product": product_info,
         "assets": saved_files
     })
+
+@router.post("/generate-veo-prompt")
+async def generate_veo_prompt(
+    script: str = Form(...),
+    product_name: Optional[str] = Form(None),
+    product_description: Optional[str] = Form(None),
+    creative_style: Optional[str] = Form("cinematic"),
+    mood: Optional[str] = Form("professional"),
+    target_audience: Optional[str] = Form(None)
+):
+    """
+    Generate a Veo 3 prompt for video generation based on script and product info.
+    """
+    gpt_prompt = f"""Generate a detailed video prompt for Google's Veo 3 AI video generator based on this ad script and product information.
+
+Script: {script}
+
+Product Name: {product_name or 'Not specified'}
+Product Description: {product_description or 'Not specified'}
+Creative Style: {creative_style}
+Mood: {mood}
+Target Audience: {target_audience or 'General audience'}
+
+Create a compelling video prompt that describes the visual elements, setting, camera movements, and atmosphere that would complement this ad script. The prompt should be detailed enough for Veo 3 to generate a high-quality background video that enhances the talking avatar overlay.
+
+Focus on:
+- Visual setting and environment
+- Lighting and atmosphere
+- Camera movements and angles
+- Color palette and mood
+- Any specific visual elements that relate to the product or message
+
+Keep the prompt under 200 words and make it highly visual and descriptive."""
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert video director and cinematographer who creates compelling visual prompts for AI video generation."},
+                {"role": "user", "content": gpt_prompt}
+            ],
+            max_tokens=300,
+            temperature=0.8,
+        )
+        veo_prompt = response.choices[0].message.content.strip()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OpenAI error: {e}")
+
+    return JSONResponse({
+        "veo_prompt": veo_prompt,
+        "script": script,
+        "product_info": {
+            "name": product_name,
+            "description": product_description
+        },
+        "creative_style": creative_style,
+        "mood": mood,
+        "target_audience": target_audience
+    })
+
+@router.post("/complete-workflow")
+async def complete_workflow(
+    prompt: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    video: Optional[UploadFile] = File(None),
+    session_id: Optional[str] = Form(None),
+    script_format: Optional[str] = Form(None),
+    creative_strategy: Optional[str] = Form(None),
+    execution_style: Optional[str] = Form(None),
+    avatar_id: str = Form(...),
+    voice_id: str = Form(...),
+    veo_duration: Optional[int] = Form(5),
+    veo_aspect_ratio: Optional[str] = Form("16:9"),
+    veo_quality: Optional[str] = Form("standard"),
+    overlay_position: Optional[str] = Form("center"),
+    background_audio: Optional[bool] = Form(True),
+    creative_style: Optional[str] = Form("cinematic"),
+    mood: Optional[str] = Form("professional"),
+    target_audience: Optional[str] = Form(None)
+):
+    """
+    Complete workflow: Generate script, Veo prompt, and combined video.
+    """
+    if not prompt and not image and not video and not session_id:
+        raise HTTPException(status_code=400, detail="At least one input (prompt, image, video, or session_id) is required.")
+
+    # Step 1: Generate script (reuse existing logic)
+    script_response = await generate_script(
+        prompt=prompt,
+        image=image,
+        video=video,
+        session_id=session_id,
+        script_format=script_format,
+        creative_strategy=creative_strategy,
+        execution_style=execution_style
+    )
+    
+    script_data = script_response.body.decode('utf-8')
+    import json
+    script_json = json.loads(script_data)
+    generated_script = script_json["script"]
+    
+    # Get product info from session
+    product_info = None
+    if session_id:
+        product_info_path = os.path.join(UPLOAD_DIR, f"{session_id}_product.json")
+        if os.path.exists(product_info_path):
+            with open(product_info_path, "r") as f:
+                product_info = json.load(f)
+    
+    # Step 2: Generate Veo prompt
+    veo_prompt_response = await generate_veo_prompt(
+        script=generated_script,
+        product_name=product_info.get("name") if product_info else None,
+        product_description=product_info.get("description") if product_info else None,
+        creative_style=creative_style,
+        mood=mood,
+        target_audience=target_audience
+    )
+    
+    veo_prompt_data = veo_prompt_response.body.decode('utf-8')
+    veo_prompt_json = json.loads(veo_prompt_data)
+    generated_veo_prompt = veo_prompt_json["veo_prompt"]
+    
+    # Step 3: Generate combined video
+    from routes.combined_video import generate_combined_video_with_script
+    
+    combined_video_response = await generate_combined_video_with_script(
+        veo_prompt=generated_veo_prompt,
+        script=generated_script,
+        avatar_id=avatar_id,
+        voice_id=voice_id,
+        veo_duration=veo_duration,
+        veo_aspect_ratio=veo_aspect_ratio,
+        veo_quality=veo_quality,
+        overlay_position=overlay_position,
+        background_audio=background_audio
+    )
+    
+    return JSONResponse({
+        "session_id": script_json.get("session_id"),
+        "script": generated_script,
+        "veo_prompt": generated_veo_prompt,
+        "combined_video": combined_video_response,
+        "workflow_status": "completed"
+    })
